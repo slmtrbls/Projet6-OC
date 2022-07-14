@@ -47,63 +47,67 @@ exports.createSauce = (req, res, next) => {
 };
 
 exports.manageLikes = (req, res, next) => {
-    const userId = req.auth.userId;
-    if (req.body.like == 1) {
-        Sauce.findOne({_id : req.params.id})
-            .then((sauce) => {
-                const usersLikedIds = sauce.usersLiked;
-                if (!usersLikedIds.find( (el) => el === userId )) {
-                let likeNumber = sauce.likes;
-                likeNumber++;
-                let newUsersLiked = sauce.usersLiked;
-                newUsersLiked.push(userId)
-                Sauce.updateOne({ _id: req.params.id}, { likes : likeNumber, usersLiked : newUsersLiked })
-                    .then(() => res.status(200).json({message : 'Like ajouté!'}))
-                    .catch(error => res.status(401).json({ error }))
-                }
-            })  
-            .catch(error => res.status(500).json({ error }))      
-    }
-    if (req.body.like == 0) {
-        Sauce.findOne({_id : req.params.id})
-            .then((sauce) => {
-                const usersLikedIds = sauce.usersLiked;
-                const isLike = usersLikedIds.find( (el) => el === userId )
-                if (isLike) {
-                    let likeNumber2 = sauce.likes;
-                    likeNumber2--;
-                    let newUsersLiked2 = sauce.usersLiked;
-                    newUsersLiked2 = newUsersLiked2.filter( el => el.value == userId );
-                    Sauce.updateOne({ _id: req.params.id}, { likes : likeNumber2, usersLiked : newUsersLiked2 })
-                        .then(() => res.status(200).json({message : 'Like supprimé!'}))
-                        .catch(error => res.status(401).json({ error })) 
-                } else {
-                    let dislikeNumber2 = sauce.dislikes;
-                    dislikeNumber2--;
-                    let newUsersDisliked2 = sauce.usersDisliked;
-                    newUsersDisliked2 = newUsersDisliked2.filter( el => el.value == userId )
-                    Sauce.updateOne({ _id: req.params.id}, { dislikes : dislikeNumber2, usersDisliked : newUsersDisliked2 })
-                    .then(() => res.status(200).json({message : 'Dislike supprimé!'}))
-                    .catch(error => res.status(401).json({ error }))
-                } 
-            })  
-            .catch(error => res.status(500).json({ error }))
-    }
-    if (req.body.like === -1) {
-        Sauce.findOne({_id : req.params.id})
-            .then((sauce) => {
-                const usersDislikedIds = sauce.usersDisliked;
-                if (!usersDislikedIds.find( (el) => el === userId )) {
-                let dislikeNumber = sauce.dislikes;
-                dislikeNumber++;
-                let newUsersDisliked = sauce.usersDisliked;
-                newUsersDisliked.push(userId)
-                Sauce.updateOne({ _id: req.params.id}, { dislikes : dislikeNumber, usersDisliked : newUsersDisliked })
-                    .then(() => res.status(200).json({message : 'Dislike ajouté!'}))
-                    .catch(error => res.status(401).json({ error }))
-                }
-            })  
-            .catch(error => res.status(500).json({ error }))
+    if (req.body.userId === req.auth.userId) {
+        const userId = req.body.userId;
+        if (req.body.like == 1) {
+            Sauce.findOne({_id : req.params.id})
+                .then((sauce) => {
+                    const usersLikedIds = sauce.usersLiked;
+                    if (!usersLikedIds.find( (el) => el === userId )) {
+                    let likeNumber = sauce.likes;
+                    likeNumber++;
+                    let newUsersLiked = sauce.usersLiked;
+                    newUsersLiked.push(userId)
+                    Sauce.updateOne({ _id: req.params.id}, { likes : likeNumber, usersLiked : newUsersLiked })
+                        .then(() => res.status(200).json({message : 'Like ajouté!'}))
+                        .catch(error => res.status(401).json({ error }))
+                    }
+                })  
+                .catch(error => res.status(500).json({ error }))      
+        }
+        if (req.body.like == 0) {
+            Sauce.findOne({_id : req.params.id})
+                .then((sauce) => {
+                    const usersLikedIds = sauce.usersLiked;
+                    const isLike = usersLikedIds.find( (el) => el === userId )
+                    if (isLike) {
+                        let likeNumber2 = sauce.likes;
+                        likeNumber2--;
+                        let newUsersLiked2 = sauce.usersLiked;
+                        newUsersLiked2 = newUsersLiked2.filter( el => el.value == userId );
+                        Sauce.updateOne({ _id: req.params.id}, { likes : likeNumber2, usersLiked : newUsersLiked2 })
+                            .then(() => res.status(200).json({message : 'Like supprimé!'}))
+                            .catch(error => res.status(401).json({ error })) 
+                    } else {
+                        let dislikeNumber2 = sauce.dislikes;
+                        dislikeNumber2--;
+                        let newUsersDisliked2 = sauce.usersDisliked;
+                        newUsersDisliked2 = newUsersDisliked2.filter( el => el.value == userId )
+                        Sauce.updateOne({ _id: req.params.id}, { dislikes : dislikeNumber2, usersDisliked : newUsersDisliked2 })
+                        .then(() => res.status(200).json({message : 'Dislike supprimé!'}))
+                        .catch(error => res.status(401).json({ error }))
+                    } 
+                })  
+                .catch(error => res.status(500).json({ error }))
+        }
+        if (req.body.like === -1) {
+            Sauce.findOne({_id : req.params.id})
+                .then((sauce) => {
+                    const usersDislikedIds = sauce.usersDisliked;
+                    if (!usersDislikedIds.find( (el) => el === userId )) {
+                    let dislikeNumber = sauce.dislikes;
+                    dislikeNumber++;
+                    let newUsersDisliked = sauce.usersDisliked;
+                    newUsersDisliked.push(userId)
+                    Sauce.updateOne({ _id: req.params.id}, { dislikes : dislikeNumber, usersDisliked : newUsersDisliked })
+                        .then(() => res.status(200).json({message : 'Dislike ajouté!'}))
+                        .catch(error => res.status(401).json({ error }))
+                    }
+                })  
+                .catch(error => res.status(500).json({ error }))
+        }
+    } else {
+        res.status(403).json({ message : '403: unauthorized request'});
     }
 };
 
